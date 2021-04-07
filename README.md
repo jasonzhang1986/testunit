@@ -510,15 +510,48 @@ public class LiveDataTestUtil {
     }
 }
 ```
-使用 util 后的 test case 就非常精简了
+#### **Step 3. Use getOrAwaitValue to write the assertion**
+使用 getOrAwaitValue 方法和 assert 表达式来检查 LiveData 的 triggered value
+* **通过 getOrAwaitValue 获取 LiveData 的 value 值**
 ```java
-@Test
-public void calcTest_getOrAwaitValue() {
-    calculatorViewModel.calc(1, 2, Calculator.Operator.ADD);
-    String result = LiveDataTestUtil.getOrAwaitValue(calculatorViewModel.calculatorResultLiveData);
-    Assert.assertEquals("3.0", result);
+String result = LiveDataTestUtil.getOrAwaitValue(calculatorViewModel.calculatorResultLiveData);
+```
+* **使用 assert 断言值是否符合预期**
+```java
+Assert.assertEquals("3.0", result);
+```
+完整的 test case 代码如下：
+```java
+import android.arch.core.executor.testing.InstantTaskExecutorRule;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+@RunWith(JUnit4.class)
+public class CalculatorViewModelTest {
+
+    @Rule
+    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
+    private CalculatorViewModel calculatorViewModel;
+
+    @Before
+    public void setUp() {
+        calculatorViewModel = new CalculatorViewModel();
+    }
+
+    @Test
+    public void calcTest_getOrAwaitValue() {
+        calculatorViewModel.calc(1, 2, Calculator.Operator.ADD);
+        String result = LiveDataTestUtil.getOrAwaitValue(calculatorViewModel.calculatorResultLiveData);
+        Assert.assertEquals("3.0", result);
+    }
 }
 ```
+* **最后运行测试代码查看测试结果**
 
 ### **9. Android 单元测试的流程**
 实际项目中，单元测试对象与页面是一对一的，并不建议跨页面，这样的单元测试藕合度太大，维护困难。
