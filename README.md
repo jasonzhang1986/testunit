@@ -393,6 +393,49 @@ public static void assertConcurrent(final String message, final List<? extends R
 
 ### 7. 异常情况的测试
 #### 7.1 使用 assertThrows 方法
+assertThrows 方法时 Junit4.13 中新增的，使用此方法，您可以断言给定的函数调用抛出的特定类型的异常。它会返回抛出的异常，以便可以进行进一步的断言（例如，验证消息和原因是否正确）。此外，可以在引发异常后对对象的状态进行断言
+```java
+@Test
+public void testExceptionUseAssertThrows() {
+    final List<Object> list = new ArrayList<>();
+    IndexOutOfBoundsException thrown = Assert.assertThrows(
+            IndexOutOfBoundsException.class,
+            new ThrowingRunnable() {
+                @Override
+                public void run() {
+                    list.add(1, new Object());
+                }
+            });
+
+    // assertions on the thrown exception
+    assertEquals("Index: 1, Size: 0", thrown.getMessage());
+    // assertions on the state of a domain object after the exception has been thrown
+    assertTrue(list.isEmpty());
+}
+```
+#### 7.2 使用 try...catch 的方式
+在 JUnit4.13 版本之前可以使用这种 try...catch 的方式，它的用法和 Java 的语法一致
+```java
+@Test
+public void testExceptionMessage() {
+    List<Object> list = new ArrayList<>();
+
+    try {
+        list.get(0);
+        fail("Expected an IndexOutOfBoundsException to be thrown");
+    } catch (IndexOutOfBoundsException anIndexOutOfBoundsException) {
+        assertThat(anIndexOutOfBoundsException.getMessage(), is("Index: 0, Size: 0"));
+    }
+}
+```
+#### 7.3 在@Test 注解后使用 expected 指定期望的 Exception
+@Test 注解有个可选的参数“expected”，它可以指定一个 Throwable 的子类，如果想要验证case是否抛出正常的 Exception，可以使用如下写法：
+```java
+@Test(expected = IndexOutOfBoundsException.class)
+public void testExceptionUseExpected() {
+    new ArrayList<Object>().get(0);
+}
+```
 ### 8. Android 单元测试的流程
 实际项目中，单元测试对象与页面是一对一的，并不建议跨页面，这样的单元测试藕合度太大，维护困难。
 
