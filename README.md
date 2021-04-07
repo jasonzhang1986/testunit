@@ -390,7 +390,10 @@ public static void assertConcurrent(final String message, final List<? extends R
     assertTrue(message + "failed with exception(s)" + exceptions, exceptions.isEmpty());
 }
 ```
-### 7. Android 单元测试的流程
+
+### 7. 异常情况的测试
+#### 7.1 使用 assertThrows 方法
+### 8. Android 单元测试的流程
 实际项目中，单元测试对象与页面是一对一的，并不建议跨页面，这样的单元测试藕合度太大，维护困难。
 
 单元测试需要找到页面的入口，分析项目页面中的元素、业务逻辑，这里的逻辑不仅仅包括界面元素的展示以及控件组件的行为，还包括代码的处理逻辑。然后可以创建单元测试case列表，根据这个列表开始写单元测试代码。
