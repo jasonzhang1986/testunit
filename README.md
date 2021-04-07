@@ -350,7 +350,47 @@ public void test() throws Exception {
   server.shutdown();
 }
 ```
-### 6. Android 单元测试的流程
+### 6. 多线程的单测
+上述的单测都没有线程同步的问题，日常在开发中会有一些操作是会涉及多线程，那多线程的同步导致的异常并不是总能发生，所以涉及多线程同步的方法也需要纳入单测中。
+
+方法大致是通过 CountDownLatch 等待所有的线程都准备好后，让多个线程同时开始执行，尽量给多线程同步出错创造机会，来验证我们的多线程代码是否符合预期
+
+```java
+public static void assertConcurrent(final String message, final List<? extends Runnable> runnables, final int maxTimeoutSeconds) throws InterruptedException {
+    final int numThreads = runnables.size();
+    final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<Throwable>());
+    final ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+    try {
+        final CountDownLatch allExecutorThreadsReady = new CountDownLatch(numThreads);
+        final CountDownLatch afterInitBlocker = new CountDownLatch(1);
+        final CountDownLatch allDone = new CountDownLatch(numThreads);
+        for (final Runnable submittedTestRunnable : runnables) {
+            threadPool.submit(new Runnable() {
+                public void run() {
+                    allExecutorThreadsReady.countDown();
+                    try {
+                        afterInitBlocker.await();
+                        submittedTestRunnable.run();
+                    } catch (final Throwable e) {
+                        exceptions.add(e);
+                    } finally {
+                        allDone.countDown();
+                    }
+                }
+            });
+        }
+        // wait until all threads are ready
+        assertTrue("Timeout initializing threads! Perform long lasting initializations before passing runnables to assertConcurrent", allExecutorThreadsReady.await(runnables.size() * 10, TimeUnit.MILLISECONDS));
+        // start all test runners
+        afterInitBlocker.countDown();
+        assertTrue(message +" timeout! More than" + maxTimeoutSeconds + "seconds", allDone.await(maxTimeoutSeconds, TimeUnit.SECONDS));
+    } finally {
+        threadPool.shutdownNow();
+    }
+    assertTrue(message + "failed with exception(s)" + exceptions, exceptions.isEmpty());
+}
+```
+### 7. Android 单元测试的流程
 实际项目中，单元测试对象与页面是一对一的，并不建议跨页面，这样的单元测试藕合度太大，维护困难。
 
 单元测试需要找到页面的入口，分析项目页面中的元素、业务逻辑，这里的逻辑不仅仅包括界面元素的展示以及控件组件的行为，还包括代码的处理逻辑。然后可以创建单元测试case列表，根据这个列表开始写单元测试代码。
