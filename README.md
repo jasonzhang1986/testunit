@@ -99,8 +99,26 @@ public class DemoTest{
 ![](image/dependens.jpg)
 
 上述配置中要注意的是 testOptions 里 unitTests#includeAndroidResource，需要设置 为true，不然无法找到资源
+#### **3.2 优点**
+- 运行 Android 单元测试，无需启动虚拟机/真机
+- 复写 Android 核心库（即 影子类 - Shadow Classes），扩展更多有用的功能。
+- 可以对 Android 多个组件进行测试，比如：</br>
+    -- Activity</br>
+    -- Service</br>
+    -- Broadcast Receiver
+- 可以对应用资源进行测试，比如：</br>
+    -- string.xml</br>
+    -- 应用属性配置（Configuration），比如横屏或者竖屏</br>
+    -- Styles and themes</br>
+- 可以进行测试的还有：</br>
+    -- 多渠道（Multiple product flavors）
 
-##### **3.2 单元测试编写结构**
+>Robolectric 指定设备的 Android 版本、分辨率等条件进行分类型测试
+
+![](image/robolectric_config.png)
+
+
+##### **3.3 单元测试编写结构**
 单元测试也是一个标准的Java工程，以类为文件单位编写，执行的最小单位是函数，测试用例（以下简称case）是带有 @Test 注解的函数，单元测试里面带有case的类由Robolectric框架执行，需要为该类添加注解@RunWith(RobolectricTestRunner.class)。基于Robolectric的代码结构如下：
 ```java
 @RunWith(RobolectricTestRunner.class)
@@ -125,7 +143,7 @@ public class MainActivityTest {
 
 > 每个case都是独立的，case不会互相影响，即便是相互调用也不会存在多线程干扰的问题。
 
-##### **3.3 View 的点击和结果展示**
+##### **3.4 View 的点击和结果展示**
 ```java
 private CalculatorActivity calculatorActivity;
 private EditText et1, et2;
@@ -573,3 +591,5 @@ public class CalculatorViewModelTest {
 4. [Android Test Sample](https://github.com/android/testing-samples/)
 5. [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)
 6. [Android codelab](https://developer.android.com/codelabs/advanced-android-kotlin-training-testing-basics)
+7. [单元测试框架:Robolectric](https://www.jianshu.com/p/f17fa7e2253c)
+8. [Android Training](https://developer.android.com/training/testing)

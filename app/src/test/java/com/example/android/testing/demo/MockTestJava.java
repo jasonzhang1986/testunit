@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -40,20 +41,17 @@ public class MockTestJava {
         inOrder.verify(mockList).add("one");
         inOrder.verify(mockList).add("two");
         inOrder.verify(mockList).clear();
-
-//        Demo mockDemo = mock(Demo.class);
-//        Mockito.when(mockDemo.doSomething(true)).thenReturn(true);
-//        System.out.println(mockDemo.doSomething(true));
-//        doCallRealMethod().when(mockDemo).doSomething(true);
-//        boolean ret = mockDemo.doSomething(true);
-//        System.out.println("mock doSomething ret="+ret);
-
-
-        Demo demo = new Demo();
-        Demo spyDemo = spy(demo);
-        boolean ret = spyDemo.doSomething(true);
-//        System.out.println("spy doSomething ret="+ret);
     }
+
+    @Test
+    public void testMock_doCallRealMethod() {
+        Demo mockDemo = mock(Demo.class);
+        Mockito.when(mockDemo.doSomething(true)).thenReturn(false);
+        System.out.println(mockDemo.doSomething(true));
+        doCallRealMethod().when(mockDemo).doSomething(true);
+        System.out.println("mock doSomething ret=" + mockDemo.doSomething(true));
+    }
+
 
     @Test
     public void testSpy() {

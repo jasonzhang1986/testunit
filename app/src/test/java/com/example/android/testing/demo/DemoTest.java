@@ -1,5 +1,6 @@
 package com.example.android.testing.demo;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -26,8 +27,8 @@ public class DemoTest{
     public void testDoSomething() {
         Demo demo = new Demo();
         assertTrue(demo.doSomething(true));
-        assertThat(false, is(equals(demo.doSomething(false))));
-        assertThat(false, is(equals(demo.doSomething(null))));
+        MatcherAssert.assertThat(false, is(equals(demo.doSomething(false))));
+        MatcherAssert.assertThat(false, is(equals(demo.doSomething(null))));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
